@@ -1,0 +1,28 @@
+type Query {
+    getScp(id: ID!): SCP!
+    listScps: [SCP!]!
+}
+
+
+type SCP {
+    id: ID!
+    item: String!
+    name: String!
+    objectClass: String!
+    image: String
+    rating: Int!
+    scpoints: Int!
+    claims: Int!
+}
+
+type Player {
+    id: ID!
+    name: String!
+    email: String!
+    scpoints: Int!
+    claims: Int!
+    scps: [SCP!]!
+    rank: String!
+    class: String!
+}
+
