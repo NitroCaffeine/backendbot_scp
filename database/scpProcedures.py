@@ -1,4 +1,6 @@
 
+import asyncio
+import random
 from faunadbConnect import faunadbConnect
 from faunadb import query as q
 from operator import itemgetter
@@ -40,7 +42,7 @@ class ScpDBProcedures(faunadbConnect):
                             "map": q.select("data", q.map_(q.lambda_("ref", q.var("ref")), q.var("list"))),
                             
                         }, q.var("map"))
-            response = await self.client.query(query)
+            response = self.client.query(query)
 
                     
             for i in response: 
@@ -50,8 +52,27 @@ class ScpDBProcedures(faunadbConnect):
                         collection_data.append(new_response["data"])
                         
             return collection_data
+        except Exception as e:
+            return e
+    
+    async def random_scp(self):
+        try:
+             all_scp = self.get_all_scp()
+             return random.choice(all_scp)
+        except Exception as e:
+            return e
+    
 
+    async def update_scp_claims(self, scp_documentID):
+        try:
+            query = q.update(q.ref(q.collection("SCP"), scp_documentID), {"data": {"claims": q.add(q.select(["data", "claims"], q.get(q.ref(q.collection("SCP"), scp_documentID))), 1)}})
+            await self.client.query(query)
+
+            return 'alterado com sucesso'
+        except Exception as e:
+            return e
           
+            
 
 
 
@@ -69,12 +90,16 @@ class ScpDBProcedures(faunadbConnect):
             #     })
     
             # return list
-        except Exception as e:
-            return e
+        
        
     
+# async def mains(): 
+     
+#   teste = ScpDBProcedures()
+#   r = await teste.random_scp()
+#   print(r)
 
-#teste = ScpDBProcedures()
+# asyncio.run(mains())
 #print(teste.get_ranking_scp(10))
 # print(teste.get_ranking_scp(10))
 #print(teste)
