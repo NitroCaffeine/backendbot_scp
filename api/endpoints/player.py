@@ -54,7 +54,7 @@ async def get_playerRank(qtd: int, data:str = data):
 # redirect_url = f"/graphql?query={{playerSCP(playerDiscordId: \"{player_discord_id}\", playerGuildId: \"{player_guild_id}\"){{ {data} }}}}"
     # return RedirectResponse(url=redirect_url)
 
-@router.get("{player_discord_id}/{player_guild_id}/scps")
+@router.get("/{player_discord_id}/{player_guild_id}/scps")
 async def get_playerScps(player_discord_id: str, player_guild_id: str, data: str = data_scp):
     
     try:
@@ -76,7 +76,7 @@ async def get_playerScps(player_discord_id: str, player_guild_id: str, data: str
 
 
 
-@router.post("{player_discord_id}/{player_guild_id}/add")
+@router.post("/{player_discord_id}/{player_guild_id}/add")
 async def add_player(player_discord_id: str, player_guild_id: str, name: str):
     try:
         query = f"""
@@ -103,7 +103,7 @@ async def add_player(player_discord_id: str, player_guild_id: str, name: str):
     #router.post("/graphql)
     
 
-@router.put("{player_discord_id}/{player_guild_id}/add/scp")
+@router.put("/{player_discord_id}/{player_guild_id}/add/scp")
 async def update_playerSCP(player_discord_id: str, player_guild_id: str, scp_documentID: str):
    
     try:
@@ -124,7 +124,7 @@ async def update_playerSCP(player_discord_id: str, player_guild_id: str, scp_doc
     except Exception as e:
         raise HTTPException(status_code=404, detail=e.args)
 
-@router.put("{player_discord_id}/{player_guild_id}/xp")
+@router.put("/{player_discord_id}/{player_guild_id}/xp")
 async def update_playerXp(player_discord_id: str, player_guild_id: str):
     try:
         query = f"""
