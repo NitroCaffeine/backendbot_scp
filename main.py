@@ -14,7 +14,8 @@ app.include_router(graphql_app, prefix="/graphql")
 #app.add_websocket_route('/graphql', graphql_app)
 
 
-uvicorn.run(app, host="0.0.0.0", port=8000)    
+if __name__ == "__main__":
+  uvicorn.run("server.api:app", host="0.0.0.0", port=8000, reload=True)
 
 
 
