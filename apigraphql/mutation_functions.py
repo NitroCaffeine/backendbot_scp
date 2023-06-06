@@ -1,10 +1,13 @@
 import sys
+
+from database.scpProcedures import ScpDBProcedures as SCPDB
 sys.path.append("database")
 
 from database.playerProcedures import PlayerDBProcedures as PlayerDB
 #from .schema import PlayerLevel, PlayerClass, PlayerTitle
 
 playerdb = PlayerDB()
+scpdb = SCPDB()
 
 async def add_player_schema(
         player_discord_id: str,
@@ -30,10 +33,20 @@ async def add_player_schema(
         # except:
         #     return 'error'
 
-async def update_player_scps_schema(player_discord_id: str, player_guild_id: str, scp_documentID: str) -> str:
-        try:
-            res = await playerdb.update_player_scps(player_discord_id, player_guild_id, scp_documentID)
+async def update_player_scps_schema(player_discord_id: str, player_guild_id: str, scp_documentID: str):
+        
+            response = await playerdb.update_player_scps(player_discord_id, player_guild_id, scp_documentID)
            
-            return res     
-        except:
-            return 'Erro ao inserir'
+            return response  
+
+async def update_player_xp_schema(player_discord_id: str, player_guild_id:str) :
+        response = await playerdb.update_xp_player(player_discord_id, player_guild_id)
+        return response
+
+
+
+async def update_scp_claims_schema(scp_documentID: str):
+        response = await scpdb.update_scp_claims(scp_documentID)
+        return response['data']
+
+      

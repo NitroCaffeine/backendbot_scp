@@ -18,7 +18,7 @@ import uvicorn
 
 app = FastAPI()
 app.include_router(graphql_app, prefix="/graphql")
-app.add_websocket_route('/graphql', graphql_app)
+#app.add_websocket_route('/graphql', graphql_app)
 
 # dados = "item , name"
 # @app.get("/allSCP")

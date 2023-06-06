@@ -1,9 +1,9 @@
+
 import sys
 sys.path.append("apigraphql")
 
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from fastapi.responses import RedirectResponse
-import requests
 from apigraphql.schema import schema
 
 
@@ -13,60 +13,132 @@ router = APIRouter()
 data = "playerDiscordId, level, name, scpoints , currentXp, title, className"
 data_scp = "item, name, scpoints, image, claims, objectClass"
 
-@router.get("/player")
+
+# redirect_url = f"/graphql?query={{player(playerDiscordId: \"{player_discord_id}\", playerGuildId: \"{player_guild_id}\"){{ {data} }}}}"
+    # return RedirectResponse(url=redirect_url)
+
+
+@router.get("/{player_discord_id}/{player_guild_id}")
 async def get_player(player_discord_id: str, player_guild_id: str, data:str = data):
-    redirect_url = f"/graphql?query={{player(playerDiscordId: \"{player_discord_id}\", playerGuildId: \"{player_guild_id}\"){{ {data} }}}}"
-    return RedirectResponse(url=redirect_url)
+    
+    try:
+        query = f""" query {{player(playerDiscordId: "{player_discord_id}", playerGuildId: "{player_guild_id}"){{ {data} }}}}"""
+        variables= {
+            "playerDiscordId": player_discord_id,
+            "playerGuildId": player_guild_id
+        }
 
-@router.get("/rank")
+        result = await schema.execute(query, variable_values=variables)
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=e.args)
+
+
+  # redirect_url = f"/graphql?query={{playerRank(qtd: {qtd}){{ {data} }}}}"
+    # return RedirectResponse(url=redirect_url)
+@router.get("/rank/{qtd}")
 async def get_playerRank(qtd: int, data:str = data):
-    redirect_url = f"/graphql?query={{playerRank(qtd: {qtd}){{ {data} }}}}"
-    return RedirectResponse(url=redirect_url)
+  
+    try:
+        query = f""" query {{playerRank(qtd: {qtd}){{ {data} }}}}"""
 
-@router.get("/scps")
+        variables = {
+            "qtd": qtd
+        }
+        result = await schema.execute(query, variable_values=variables)
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=e.args)
+
+
+# redirect_url = f"/graphql?query={{playerSCP(playerDiscordId: \"{player_discord_id}\", playerGuildId: \"{player_guild_id}\"){{ {data} }}}}"
+    # return RedirectResponse(url=redirect_url)
+
+@router.get("{player_discord_id}/{player_guild_id}/scps")
 async def get_playerScps(player_discord_id: str, player_guild_id: str, data: str = data_scp):
-    redirect_url = f"/graphql?query={{playerSCP(playerDiscordId: \"{player_discord_id}\", playerGuildId: \"{player_guild_id}\"){{ {data} }}}}"
-    return RedirectResponse(url=redirect_url)
+    
+    try:
+        query = f""" query {{
+                playerSCP(playerDiscordId: "{player_discord_id}", playerGuildId: "{player_guild_id}") 
+                {{  {data}   }}
+
+        }}"""
+
+        variables = {
+            "playerDiscordId": player_discord_id,
+            "playerGuildId": player_guild_id
+        }
+        result = await schema.execute(query, variable_values=variables)
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=e.args)
 
 
 
 
-#mudar todos para uma query 
-@router.post("/add")
-async def post_player(player_discord_id: str, player_guild_id: str, name: str):
-    query = f"""
-       mutation {{
-            addPlayer(playerDiscordId: "{player_discord_id}", playerGuildId: "{player_guild_id}", name: "{name}") {{
-                playerDiscordId
-                name
+@router.post("{player_discord_id}/{player_guild_id}/add")
+async def add_player(player_discord_id: str, player_guild_id: str, name: str):
+    try:
+        query = f"""
+        mutation {{
+                addPlayer(playerDiscordId: "{player_discord_id}", playerGuildId: "{player_guild_id}", name: "{name}") {{
+                    playerDiscordId
+                    name
+                }}
             }}
-        }}
-    """
-    
-    variables = {
-        "playerDiscordId": player_discord_id,
-        "playerGuildId": player_guild_id
-    }
+        """
+        
+        variables = {
+            "playerDiscordId": player_discord_id,
+            "playerGuildId": player_guild_id
+        }
 
-    result = await schema.execute(query, variable_values=variables)
-    return result
-    
+        result = await schema.execute(query, variable_values=variables)
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=e.args)
+        
     #r = requests.post(url="https://api.apigraphql.com/graphql", json={"query": query}
 
     #router.post("/graphql)
     
 
-@router.put("/add/scp")
-async def put_playerSCP(player_discord_id: str, player_guild_id: str, scp_documentID: int):
-    # redirect_url = f"/graphql?mutation={{addPlayerSCP(playerDiscordId: \"{player_discord_id}\", playerGuildId: \"{player_guild_id}\", scpDocumentID: \"{scp_documentID}\")}}"
-    # return RedirectResponse(url=redirect_url)
+@router.put("{player_discord_id}/{player_guild_id}/add/scp")
+async def update_playerSCP(player_discord_id: str, player_guild_id: str, scp_documentID: str):
+   
+    try:
+        query = f"""
+        mutation {{
+                updatePlayerScp(playerDiscordId: "{player_discord_id}", playerGuildId: "{player_guild_id}", scpDocumentid: "{scp_documentID}") 
+            }}
+        """
 
-    query = f" mutation {{addPlayerSCP(playerDiscordId: {player_discord_id}, playerGuildId: {player_guild_id}, scpDocumentid: {scp_documentID} ) }}"
+        variables = {
+            "playerDiscordId": player_discord_id,
+            "playerGuildId": player_guild_id,
+            "scpDocumentid": scp_documentID
+        }
 
-    data = {"query": query}
+        result = await schema.execute(query, variable_values=variables)
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=e.args)
 
-    response = requests.post(json=data) 
-    
-    result = response.json()
+@router.put("{player_discord_id}/{player_guild_id}/xp")
+async def update_playerXp(player_discord_id: str, player_guild_id: str):
+    try:
+        query = f"""
+        mutation {{
+                updatePlayerXp(playerDiscordId: "{player_discord_id}", playerGuildId: "{player_guild_id}") 
+            }}
+        """
 
-    return result
+        variables = {
+            "playerDiscordId": player_discord_id,
+            "playerGuildId": player_guild_id
+        }
+
+        result = await schema.execute(query, variable_values=variables)
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=e.args)

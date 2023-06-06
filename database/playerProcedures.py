@@ -124,6 +124,7 @@ class PlayerDBProcedures(faunadbConnect):
 
     async def update_xp_player(self, player_discord_id, player_guild_id): #chamar função quando o jogador gerar um scp aleatório
         try:
+            
             query = q.let({
                 "doc":  await self.get_player_in_guild(player_discord_id, player_guild_id), 
                 "ref": q.select(["ref"], q.var("doc")),
@@ -145,6 +146,8 @@ class PlayerDBProcedures(faunadbConnect):
                 if document["data"]["current_xp"] == dict['xp']:  #verifica se a xp atual do player corresponde a xp mínima para passar pra um determinado level
                     await self.update_level_class_title_player(document, dict['class'], dict['title'])
                     break
+
+            return 'alterado com sucesso'
 
             
           
@@ -262,17 +265,17 @@ class PlayerDBProcedures(faunadbConnect):
 
 
    
-async def mains(): 
+# async def mains(): 
      
     
  
-    obj = PlayerDBProcedures()
+#     obj = PlayerDBProcedures()
     
-    a = await obj.get_player_in_guild("221","45")
-    print(a)
+#     a = await obj.update_player_scps("3","3", 123)
+#     print(a)
 
 
-asyncio.run(mains())
+# asyncio.run(mains())
 
 
 #addplayer 

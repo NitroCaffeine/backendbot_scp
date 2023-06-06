@@ -16,8 +16,8 @@ class ScpDBProcedures(faunadbConnect):
                     q.paginate(q.match(q.index("all_scps")), size=999))
         
             response = self.client.query(query)
-            data = response["data"]
-            return data
+            #data = response
+            return response['data']
     
         except Exception as e:
             return []
@@ -57,7 +57,7 @@ class ScpDBProcedures(faunadbConnect):
     
     async def random_scp(self):
         try:
-             all_scp = self.get_all_scp()
+             all_scp = await self.get_all_scp()
              return random.choice(all_scp)
         except Exception as e:
             return e
@@ -66,9 +66,9 @@ class ScpDBProcedures(faunadbConnect):
     async def update_scp_claims(self, scp_documentID):
         try:
             query = q.update(q.ref(q.collection("SCP"), scp_documentID), {"data": {"claims": q.add(q.select(["data", "claims"], q.get(q.ref(q.collection("SCP"), scp_documentID))), 1)}})
-            await self.client.query(query)
+            response = self.client.query(query)
 
-            return 'alterado com sucesso'
+            return response
         except Exception as e:
             return e
           
