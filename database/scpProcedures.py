@@ -20,7 +20,7 @@ class ScpDBProcedures(faunadbConnect):
             return response['data']
     
         except Exception as e:
-            return []
+            return e
     
     
     async def get_scp_by_item(self, item):
