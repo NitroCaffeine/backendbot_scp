@@ -1,6 +1,6 @@
 
 import operator
-
+from typing import List
 
 from strawberry.schema.config import StrawberryConfig
 from enum import Enum
@@ -63,13 +63,13 @@ class Player:
 @strawberry.type
 class Query:
   
-    all_scp: list[SCP] = strawberry.field(resolver=get_all_scp_schema) 
+    all_scp: List[SCP] = strawberry.field(resolver=get_all_scp_schema) 
     scp_by_item: SCP = strawberry.field(resolver=get_scp_byItem_schema)
-    scpRank: list[SCP] = strawberry.field(resolver=get_ranking_scp_schema)
+    scpRank: List[SCP] = strawberry.field(resolver=get_ranking_scp_schema)
     randomScp: SCP = strawberry.field(resolver=get_random_scp_schema)
     player: Player = strawberry.field(resolver=get_player_in_guild)
-    playerRank: list[Player] = strawberry.field(resolver=get_player_ranking_schema)
-    playerSCP: list[SCP] = strawberry.field(resolver=get_player_scps)
+    playerRank: List[Player] = strawberry.field(resolver=get_player_ranking_schema)
+    playerSCP: List[SCP] = strawberry.field(resolver=get_player_scps)
     
 
 @strawberry.type
