@@ -1,2 +1,6 @@
 .env
 scp_data.json
+venv/
+venv
+__pycache__/
+__pycache__
